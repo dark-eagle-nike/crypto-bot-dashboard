@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto News Bot Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #00d9ff 0%, #0099cc 100%);
+            color: #000;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+        
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+        .subtitle { font-size: 13px; opacity: 0.8; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(26, 26, 26, 0.95);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+        
+        .status-card:hover {
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+        
+        .status-icon {
+            font-size: 28px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .status-text h3 { font-size: 12px; color: #888; margin-bottom: 4px; }
+        .status-text p { font-size: 14px; font-weight: 600; }
+        
+        .status-ok { border-left: 4px solid #4ade80; }
+        .status-error { border-left: 4px solid #ef4444; }
+        .status-warning { border-left: 4px solid #fbbf24; }
+        
+        .section {
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00d9ff;
+        }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .price-card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.2);
+        }
+        
+        .coin-symbol {
+            font-weight: 700;
+            color: #00d9ff;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        
+        .coin-name {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .coin-price {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .coin-change {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .coin-change.up {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        
+        .coin-change.down {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .news-container {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .news-item {
+            background: rgba(15, 15, 15, 0.9);
+            border-left: 4px solid #00d9ff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .news-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 11px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #00d9ff;
+            color: #000;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10px;
+            margin-right: 6px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            background: #0f0f0f;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #00d9ff;
+        }
+        
+        .char-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: rgba(15, 15, 15, 0.5);
+            border-radius: 6px;
+        }
+        
+        .char-count {
+            font-weight: 700;
+        }
+        
+        .char-count.ok { color: #4ade80; }
+        .char-count.warning { color: #fbbf24; }
+        .char-count.danger { color: #ef4444; }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #000;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+        
+        .btn-secondary:hover {
+            background: #444;
+            border-color: #00d9ff;
+        }
+        
+        .btn-test {
+            background: #0099cc;
+            color: #fff;
+        }
+        
+        .btn-test:hover {
+            background: #00d9ff;
+            color: #000;
+        }
+        
+        .template-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .tpl-btn {
+            padding: 8px 14px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: #00d9ff;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tpl-btn:hover {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .scheduler-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .scheduler-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .scheduler-btn.play {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #000;
+        }
+        
+        .scheduler-btn.stop {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+        }
+        
+        .scheduler-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .scheduler-status {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .log-container {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 200px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid #222;
+        }
+        
+        .log-ok { color: #4ade80; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #00d9ff; }
+        .log-warn { color: #fbbf24; }
+        
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ade80;
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(74, 222, 128, 0.3);
+        }
+        
+        .copy-notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .refresh-btn {
+            padding: 6px 12px;
+            background: #00d9ff;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            opacity: 0.9;
+            transform: rotate(180deg);
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column { grid-template-columns: 1fr; }
+            h1 { font-size: 24px; }
+            .btn-group { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 CRYPTO NEWS BOT</h1>
+        <p class="subtitle">Professional Dashboard • Real-Time Data • Live Trading Updates</p>
+    </div>
+
+    <div class="container">
+        <!-- STATUS INDICATORS -->
+        <div class="status-grid">
+            <div class="status-card status-ok">
+                <div class="status-icon">✅</div>
+                <div class="status-text">
+                    <h3>SERVER</h3>
+                    <p id="serverStatus">Checking...</p>
+                </div>
+            </div>
+            
+            <div class="status-card status-ok">
+                <div class="status-icon">🐦</div>
+                <div class="status-text">
+                    <h3>TWITTER API</h3>
+                    <p id="twitterStatus">Checking...</p>
+                </div>
+            </div>
+            
+            <div class="status-card status-ok">
+                <div class="status-icon">📊</div>
+                <div class="status-text">
+                    <h3>PRICES</h3>
+                    <p id="priceStatus">Checking...</p>
+                </div>
+            </div>
+            
+            <div class="status-card status-ok">
+                <div class="status-icon">📰</div>
+                <div class="status-text">
+                    <h3>NEWS</h3>
+                    <p id="newsStatus">Checking...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVE PRICES -->
+        <div class="section">
+            <div class="section-title">
+                📈 LIVE CRYPTO PRICES
+                <button class="refresh-btn" onclick="fetchPrices()">🔄 Refresh</button>
+            </div>
+            <div class="price-grid" id="pricesGrid">
+                <div style="color: #888; text-align: center; padding: 20px;">Loading prices...</div>
+            </div>
+        </div>
+
+        <!-- NEWS & TWEET (Two Columns) -->
+        <div class="two-column">
+            <!-- NEWS -->
+            <div class="section">
+                <div class="section-title">
+                    📰 VERIFIED CRYPTO NEWS
+                    <button class="refresh-btn" onclick="fetchNews()">🔄 Refresh</button>
+                </div>
+                <div class="news-container" id="newsGrid">
+                    <div style="color: #888; text-align: center; padding: 20px;">Loading news...</div>
+                </div>
+            </div>
+
+            <!-- TWEET COMPOSER -->
+            <div class="section">
+                <div class="section-title">✍️ COMPOSE & POST TWEET</div>
+                
+                <div style="margin-bottom: 12px;">
+                    <p style="font-size: 11px; color: #888; margin-bottom: 8px;">QUICK TEMPLATES:</p>
+                    <div class="template-buttons">
+                        <button class="tpl-btn" onclick="useTemplate('btc')">💰 BTC Price</button>
+                        <button class="tpl-btn" onclick="useTemplate('eth')">⚡ ETH Update</button>
+                        <button class="tpl-btn" onclick="useTemplate('news')">📰 News</button>
+                        <button class="tpl-btn" onclick="useTemplate('bullish')">📈 Bullish</button>
+                        <button class="tpl-btn" onclick="useTemplate('clear')">✏️ Clear</button>
+                    </div>
+                </div>
+
+                <textarea id="tweetText" placeholder="Write your tweet here (max 280 characters)..."></textarea>
+                
+                <div class="char-info">
+                    <span>Characters: <span class="char-count ok" id="charCount">0/280</span></span>
+                    <span id="charStatus"></span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="copyTweet()">📋 COPY</button>
+                    <button class="btn btn-success" onclick="postTweet()">🚀 POST</button>
+                    <button class="btn btn-test" onclick="testBtcTweet()">🧪 TEST BTC</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUTO SCHEDULER -->
+        <div class="section">
+            <div class="section-title">⏰ AUTO-POST SCHEDULER</div>
+            <div class="scheduler-controls">
+                <button class="scheduler-btn play" id="schedPlayBtn" onclick="startScheduler()">▶️ START (Every 2 Hours)</button>
+                <button class="scheduler-btn stop" id="schedStopBtn" onclick="stopScheduler()" style="display: none;">⏹️ STOP SCHEDULER</button>
+            </div>
+            <div class="scheduler-status">
+                Status: <span id="schedStatus" style="color: #888;">Stopped</span>
+                <br>Next Post: <span id="nextPostTime" style="color: #00d9ff;">Manual</span>
+                <br>Posted Today: <span id="postedCount" style="color: #4ade80;">0</span>
+            </div>
+        </div>
+
+        <!-- ACTIVITY LOG -->
+        <div class="section">
+            <div class="section-title">📋 ACTIVITY LOG</div>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry log-info">[INIT] Dashboard loaded successfully</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-notification" id="copyNotif">✓ Copied to clipboard!</div>
+
+    <script>
+        // Configuration
+        const SERVER_URL = 'https://crypto-bot-backend-production-0e66.up.railway.app'; // REPLACE WITH YOUR RAILWAY URL
+        let schedulerActive = false;
+        let postedToday = 0;
+
+        // Logging
+        function addLog(msg, type = 'info') {
+            const log = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Dubai' });
+            entry.textContent = `[${time}] ${msg}`;
+            log.insertBefore(entry, log.firstChild);
+            while (log.children.length > 25) log.removeChild(log.lastChild);
+        }
+
+        // Check Server Status
+        async function checkServer() {
+            try {
+                const res = await fetch(SERVER_URL);
+                const data = await res.json();
+                
+                document.getElementById('serverStatus').textContent = 'Online';
+                document.getElementById('serverStatus').parentElement.parentElement.className = 'status-card status-ok';
+                document.getElementById('twitterStatus').textContent = data.twitter;
+                document.getElementById('twitterStatus').parentElement.parentElement.className = `status-card ${data.twitter.includes('✅') ? 'status-ok' : 'status-error'}`;
+                
+                addLog('✓ Server connected', 'ok');
+                return true;
+            } catch (e) {
+                document.getElementById('serverStatus').textContent = 'Offline';
+                document.getElementById('serverStatus').parentElement.parentElement.className = 'status-card status-error';
+                addLog('✗ Server unreachable: ' + e.message, 'error');
+                return false;
+            }
+        }
+
+        // Fetch Live Prices
+        async function fetchPrices() {
+            try {
+                document.getElementById('priceStatus').textContent = 'Loading...';
+                const res = await fetch(SERVER_URL + '/api/prices');
+                const { data } = await res.json();
+
+                let html = '';
+                Object.entries(data).forEach(([sym, info]) => {
+                    const change = info.change24h;
+                    const changeClass = change >= 0 ? 'up' : 'down';
+                    const changeSymbol = change >= 0 ? '↑' : '↓';
+
+                    html += `
+                        <div class="price-card">
+                            <div class="coin-symbol">${sym}</div>
+                            <div class="coin-name">${info.name}</div>
+                            <div class="coin-price">$${Math.floor(info.price).toLocaleString()}</div>
+                            <div class="coin-change ${changeClass}">${changeSymbol} ${Math.abs(change).toFixed(2)}%</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('pricesGrid').innerHTML = html;
+                document.getElementById('priceStatus').textContent = '✓ Live';
+                document.getElementById('priceStatus').parentElement.parentElement.className = 'status-card status-ok';
+                addLog('✓ Prices updated from CoinGecko', 'ok');
+            } catch (e) {
+                document.getElementById('priceStatus').textContent = '✗ Failed';
+                document.getElementById('priceStatus').parentElement.parentElement.className = 'status-card status-error';
+                addLog('✗ Price fetch failed', 'error');
+            }
+        }
+
+        // Fetch News
+        async function fetchNews() {
+            try {
+                document.getElementById('newsStatus').textContent = 'Loading...';
+                const res = await fetch(SERVER_URL + '/api/news');
+                const { data } = await res.json();
+
+                let html = '';
+                data.forEach(news => {
+                    html += `
+                        <div class="news-item">
+                            ${news.verified ? '<span class="badge">✓ VERIFIED</span>' : ''}
+                            <div class="news-title">${news.title}</div>
+                            <div class="news-meta">
+                                <span>📰 ${news.source}</span>
+                                <span>${news.time}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('newsGrid').innerHTML = html;
+                document.getElementById('newsStatus').textContent = '✓ ' + data.length;
+                document.getElementById('newsStatus').parentElement.parentElement.className = 'status-card status-ok';
+                addLog(`✓ ${data.length} news articles loaded`, 'ok');
+            } catch (e) {
+                document.getElementById('newsStatus').textContent = '✗ Failed';
+                document.getElementById('newsStatus').parentElement.parentElement.className = 'status-card status-error';
+                addLog('✗ News fetch failed', 'error');
+            }
+        }
+
+        // Use Template
+        function useTemplate(type) {
+            const templates = {
+                btc: '📈 Bitcoin price movement: Strong technical setup. Market showing bullish momentum. #BTC #crypto #trading',
+                eth: '⚡ Ethereum network activity at all-time highs. Layer 2 adoption accelerating. #ETH #DeFi',
+                news: '📰 Breaking crypto market news: Major institutional developments. Stay informed! #crypto #news',
+                bullish: '📊 Market sentiment turning bullish. Fundamentals strengthening. DYOR always. #crypto',
+                clear: ''
+            };
+            document.getElementById('tweetText').value = templates[type] || '';
+            updateCharCount();
+        }
+
+        // Character Counter
+        document.getElementById('tweetText').addEventListener('input', updateCharCount);
+        
+        function updateCharCount() {
+            const text = document.getElementById('tweetText').value;
+            const count = text.length;
+            const counter = document.getElementById('charCount');
+            
+            counter.textContent = `${count}/280`;
+            counter.className = 'char-count ';
+            
+            let status = '';
+            if (count > 280) {
+                counter.classList.add('danger');
+                status = '❌ Too long!';
+            } else if (count > 250) {
+                counter.classList.add('warning');
+                status = '⚠️ Close to limit';
+            } else {
+                counter.classList.add('ok');
+                status = count > 0 ? '✓ Ready' : '';
+            }
+            
+            document.getElementById('charStatus').textContent = status;
+        }
+
+        // Copy Tweet
+        function copyTweet() {
+            const text = document.getElementById('tweetText').value;
+            if (!text) { alert('Write something first!'); return; }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const notif = document.getElementById('copyNotif');
+                notif.classList.add('show');
+                addLog('📋 Tweet copied to clipboard', 'ok');
+                setTimeout(() => notif.classList.remove('show'), 2000);
+            });
+        }
+
+        // Post Tweet
+        async function postTweet() {
+            const text = document.getElementById('tweetText').value;
+            if (!text) { alert('Write something!'); return; }
+            if (text.length > 280) { alert('Too long!'); return; }
+
+            addLog(`🚀 Attempting to post: "${text.substring(0, 50)}..."`, 'info');
+
+            try {
+                const res = await fetch(SERVER_URL + '/api/post-tweet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                const result = await res.json();
+                
+                if (res.ok) {
+                    addLog(`✓ POSTED! Tweet ID: ${result.id}`, 'ok');
+                    postedToday++;
+                    document.getElementById('postedCount').textContent = postedToday;
+                    alert(`✅ POSTED!\n\nID: ${result.id}\n\nURL: ${result.url}`);
+                    document.getElementById('tweetText').value = '';
+                    updateCharCount();
+                } else {
+                    addLog(`✗ Post failed: ${result.error}`, 'error');
+                    alert('Error: ' + result.error);
+                }
+            } catch (e) {
+                addLog(`✗ Connection error: ${e.message}`, 'error');
+                alert('Cannot connect to server. Check if Railway is running.');
+            }
+        }
+
+        // Test with BTC Price
+        async function testBtcTweet() {
+            addLog('🧪 Testing BTC tweet generation...', 'info');
+
+            try {
+                const res = await fetch(SERVER_URL + '/api/generate-tweet', { method: 'POST' });
+                const { tweet, prices } = await res.json();
+
+                document.getElementById('tweetText').value = tweet;
+                updateCharCount();
+                
+                addLog(`🧪 BTC Test Tweet Generated:`, 'ok');
+                addLog(`   Price: $${Math.floor(prices.BTC.price).toLocaleString()}`, 'info');
+                addLog(`   24h Change: ${prices.BTC.change24h >= 0 ? '↑' : '↓'} ${Math.abs(prices.BTC.change24h).toFixed(2)}%`, 'info');
+                addLog(`   Tweet: "${tweet.substring(0, 60)}..."`, 'ok');
+            } catch (e) {
+                addLog(`✗ Test failed: ${e.message}`, 'error');
+                alert('Test failed: ' + e.message);
+            }
+        }
+
+        // Scheduler
+        function startScheduler() {
+            schedulerActive = true;
+            document.getElementById('schedPlayBtn').style.display = 'none';
+            document.getElementById('schedStopBtn').style.display = 'block';
+            document.getElementById('schedStatus').textContent = 'RUNNING';
+            document.getElementById('schedStatus').style.color = '#4ade80';
+            addLog('⏰ Auto-scheduler started - posts every 2 hours', 'ok');
+
+            // Auto-post every 2 hours
+            setInterval(async () => {
+                if (schedulerActive) {
+                    try {
+                        const res = await fetch(SERVER_URL + '/api/auto-post', { method: 'POST' });
+                        const result = await res.json();
+                        
+                        if (result.success) {
+                            addLog(`🤖 Auto-posted! ID: ${result.id}`, 'ok');
+                            postedToday++;
+                            document.getElementById('postedCount').textContent = postedToday;
+                        }
+                    } catch (e) {
+                        addLog(`Auto-post error: ${e.message}`, 'error');
+                    }
+                }
+            }, 2 * 60 * 60 * 1000);
+
+            // Update next post time
+            const nextPost = new Date(Date.now() + 2 * 60 * 60 * 1000);
+            document.getElementById('nextPostTime').textContent = nextPost.toLocaleTimeString('en-US', { timeZone: 'Asia/Dubai' });
+        }
+
+        function stopScheduler() {
+            schedulerActive = false;
+            document.getElementById('schedPlayBtn').style.display = 'block';
+            document.getElementById('schedStopBtn').style.display = 'none';
+            document.getElementById('schedStatus').textContent = 'STOPPED';
+            document.getElementById('schedStatus').style.color = '#888';
+            document.getElementById('nextPostTime').textContent = 'Manual';
+            addLog('⏹️ Auto-scheduler stopped', 'info');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            addLog('🚀 Dashboard initializing...', 'info');
+            checkServer();
+            fetchPrices();
+            fetchNews();
+            setInterval(checkServer, 30000);
+            setInterval(fetchPrices, 60000);
+            setInterval(fetchNews, 300000);
+        });
+    </script>
+</body>
+</html>
