@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto News Dashboard v15</title>
+    <title>Crypto Bot Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -11,233 +11,107 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --border: #475569;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f35 100%);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
+            color: #e2e8f0;
             min-height: 100vh;
-            padding: 12px;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        /* ============ HEADER ============ */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 0;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 24px;
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
-        .header h1 {
+        h1 {
             font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .header-status {
+        .status {
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* ============ TABS ============ */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid var(--border);
-            overflow-x: auto;
-            padding-bottom: 12px;
-        }
-
-        .tab {
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
             font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
             font-weight: 600;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
         }
 
-        .tab:hover {
-            color: var(--primary);
+        .status-ok {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
         }
 
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
         }
 
-        /* ============ TAB CONTENT ============ */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* ============ CARDS ============ */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        .section {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: all 0.3s;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
         }
 
-        .card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .card h3 {
-            font-size: 16px;
-            margin-bottom: 16px;
-            color: var(--text-primary);
+        .tweet-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        /* ============ FORM ELEMENTS ============ */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        select,
-        input {
+        textarea {
             width: 100%;
             padding: 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 8px;
-            color: var(--text-primary);
+            color: #e2e8f0;
             font-size: 14px;
-            transition: all 0.3s;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
         }
 
-        select:focus,
-        input:focus {
+        textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
         }
 
-        /* ============ TOGGLE SWITCH ============ */
-        .toggle-group {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 28px;
-            background: var(--bg-input);
-            border-radius: 14px;
-            cursor: pointer;
-            border: 2px solid var(--border);
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active {
-            background: var(--success);
-            border-color: var(--success);
-        }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: var(--bg-dark);
-            border-radius: 12px;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active::after {
-            left: 26px;
-        }
-
-        .toggle-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .toggle-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-left: 8px;
-        }
-
-        .toggle-indicator.on {
-            background: var(--success);
-        }
-
-        .toggle-indicator.off {
-            background: var(--danger);
-        }
-
-        /* ============ BUTTONS ============ */
         .button-group {
             display: flex;
             gap: 10px;
@@ -245,702 +119,361 @@
         }
 
         button {
+            flex: 1;
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 120px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            flex: 1;
-            min-width: 140px;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-secondary {
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+            background: rgba(99, 102, 241, 0.2);
+            color: #a78bfa;
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
         .btn-secondary:hover {
-            border-color: var(--secondary);
-            color: var(--secondary);
+            background: rgba(99, 102, 241, 0.3);
         }
 
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-
-        /* ============ PREVIEW ============ */
-        .preview-box {
-            background: var(--bg-input);
-            border: 2px dashed var(--border);
+        .message {
+            padding: 12px;
             border-radius: 8px;
-            padding: 16px;
             margin-top: 12px;
-            min-height: 80px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 14px;
         }
 
-        .preview-image {
-            width: 100%;
-            height: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-            margin-top: 12px;
-            border: 1px solid var(--border);
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        /* ============ STATS ============ */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        /* ============ NEWS/HISTORY LIST ============ */
-        .list-item {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .list-item:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        .list-item.selected {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.15);
-        }
-
-        .list-item-title {
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .list-item-badge {
-            background: var(--primary);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* ============ TWEET HISTORY ============ */
-        .tweet-item {
-            background: var(--bg-input);
-            border-left: 3px solid var(--primary);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-
-        .tweet-meta {
-            color: var(--text-secondary);
-            font-size: 11px;
-            margin-bottom: 8px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .tweet-type {
-            background: rgba(99, 102, 241, 0.2);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        /* ============ ALERT ============ */
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            display: none;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        .alert.success {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .alert.error {
+        .message.error {
             background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
-        /* ============ RESPONSIVE ============ */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 20px;
-            }
+        .message.info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
 
-            .tabs {
-                gap: 4px;
-            }
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-left: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
 
-            .tab {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
+        .api-status {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 12px;
+            font-family: monospace;
+            color: #cbd5e1;
+        }
+
+        .api-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        .api-status.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+        }
+
+        .tweet-preview {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 3px solid #6366f1;
+        }
+
+        .tweet-preview p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .api-endpoint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .api-endpoint code {
+            font-family: monospace;
+            color: #60a5fa;
+        }
+
+        @media (max-width: 600px) {
             .button-group {
                 flex-direction: column;
             }
 
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+            button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🚀 Crypto News Dashboard</h1>
-            <div class="header-status">
-                <span class="status-dot"></span>
-                <span>v15 • Live</span>
+        <header>
+            <h1>🚀 Crypto News Auto-Poster</h1>
+            <p>Automated Twitter/X posting for @CryptoAdemkris</p>
+            <div class="status">
+                <span>API Status:</span>
+                <span class="status-badge status-error" id="api-status">Checking...</span>
             </div>
-        </div>
+        </header>
 
-        <!-- Alert -->
-        <div id="alert" class="alert"></div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('prices')">💰 Prices</button>
-            <button class="tab" onclick="switchTab('regular')">📝 Regular Tweet</button>
-            <button class="tab" onclick="switchTab('history')">📚 History Tweet</button>
-            <button class="tab" onclick="switchTab('auto-post')">⚙️ Auto-Post</button>
-            <button class="tab" onclick="switchTab('history-view')">📊 History</button>
-        </div>
-
-        <!-- ============ PRICES TAB ============ -->
-        <div id="prices" class="tab-content active">
-            <div class="card">
-                <h3>💎 Live Prices (2min Cache)</h3>
-                <button class="btn-primary btn-small" onclick="fetchPrices()">🔄 Refresh Prices</button>
-                <div class="stats-grid" id="pricesGrid" style="margin-top: 16px;">
-                    <div class="stat-card">
-                        <div class="stat-value">--</div>
-                        <div class="stat-label">Loading...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ REGULAR TWEET TAB ============ -->
-        <div id="regular" class="tab-content">
-            <div class="card">
-                <h3>📝 Generate Regular Tweet</h3>
+        <div class="section">
+            <h2>📝 Post Tweet</h2>
+            <div class="tweet-input-group">
+                <textarea id="tweetInput" placeholder="Enter your tweet here..."></textarea>
                 
-                <div class="form-group">
-                    <label>Select Crypto</label>
-                    <select id="cryptoSelect" onchange="loadCryptoNews()">
-                        <option value="BTC">Bitcoin (BTC)</option>
-                        <option value="ETH">Ethereum (ETH)</option>
-                        <option value="ADA">Cardano (ADA)</option>
-                        <option value="SOL">Solana (SOL)</option>
-                        <option value="XRP">Ripple (XRP)</option>
-                        <option value="DOGE">Dogecoin (DOGE)</option>
-                    </select>
-                </div>
-
-                <div class="toggle-group">
-                    <div class="toggle-switch active" id="imageToggleRegular" onclick="toggleImage('regular')"></div>
-                    <label class="toggle-label">
-                        Include Image
-                        <span class="toggle-indicator on" id="imageIndicatorRegular">●</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label>Select News Article (Optional)</label>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                        <div id="newsListRegular"></div>
-                    </div>
+                <div class="tweet-preview" id="preview" style="display: none;">
+                    <strong>Preview:</strong>
+                    <p id="previewText"></p>
                 </div>
 
                 <div class="button-group">
-                    <button class="btn-primary" onclick="generateRegularTweet()">✨ Generate Tweet</button>
+                    <button class="btn-secondary" onclick="generateSampleTweet()">📝 Sample Tweet</button>
+                    <button class="btn-primary" onclick="postTweet()">🚀 Post to X</button>
                 </div>
 
-                <div class="preview-box" id="previewRegular">Click "Generate Tweet" to see preview...</div>
-                <img id="previewImageRegular" class="preview-image" style="display:none;">
+                <div id="message"></div>
 
-                <div class="button-group" style="margin-top: 16px;">
-                    <button class="btn-primary" onclick="postRegularTweet()" style="background: var(--secondary);">
-                        🐦 Post to X (@CryptoAdemkris)
-                    </button>
+                <div class="api-endpoint">
+                    <strong>Endpoint:</strong>
+                    <code>POST /api/post-tweet</code>
                 </div>
             </div>
         </div>
 
-        <!-- ============ HISTORY TWEET TAB ============ -->
-        <div id="history" class="tab-content">
-            <div class="card">
-                <h3>📚 Generate History Tweet</h3>
-
-                <div class="toggle-group">
-                    <div class="toggle-switch active" id="imageToggleHistory" onclick="toggleImage('history')"></div>
-                    <label class="toggle-label">
-                        Include Image
-                        <span class="toggle-indicator on" id="imageIndicatorHistory">●</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label>Select Crypto History (Optional)</label>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                        <div id="historyListHistory"></div>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-primary" onclick="generateHistoryTweet()">✨ Generate Tweet</button>
-                </div>
-
-                <div class="preview-box" id="previewHistory">Click "Generate Tweet" to see preview...</div>
-                <img id="previewImageHistory" class="preview-image" style="display:none;">
-
-                <div class="button-group" style="margin-top: 16px;">
-                    <button class="btn-primary" onclick="postHistoryTweet()" style="background: var(--secondary);">
-                        🐦 Post to X (@CryptoAdemkris)
-                    </button>
-                </div>
+        <div class="section">
+            <h2>⚙️ Quick Test</h2>
+            <div class="button-group">
+                <button class="btn-secondary" onclick="testAPI()">🔌 Test API Connection</button>
+                <button class="btn-secondary" onclick="checkStatus()">📊 Check Status</button>
             </div>
+            <div id="testResult"></div>
         </div>
 
-        <!-- ============ AUTO-POST TAB ============ -->
-        <div id="auto-post" class="tab-content">
-            <div class="card">
-                <h3>⚙️ Auto-Post Scheduler</h3>
-
-                <div class="toggle-group">
-                    <div class="toggle-switch" id="autoPostToggle" onclick="toggleAutoPost()"></div>
-                    <label class="toggle-label">
-                        Enable Auto-Post
-                        <span class="toggle-indicator off" id="autoPostIndicator">●</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label>Interval (Hours)</label>
-                    <input type="number" id="intervalHours" value="2" min="1" max="24" step="0.5" placeholder="Hours">
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-primary" onclick="updateAutoPostConfig()">💾 Save Config</button>
-                    <button class="btn-secondary" onclick="triggerAutoPost()">▶️ Manual Trigger</button>
-                </div>
-
-                <div id="autoPostStatus" class="preview-box" style="margin-top: 16px;">
-                    Status: Fetching...
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ HISTORY VIEW TAB ============ -->
-        <div id="history-view" class="tab-content">
-            <div class="card">
-                <h3>📊 Posted Tweets History</h3>
-                <button class="btn-primary btn-small" onclick="fetchTweetHistory()">🔄 Refresh History</button>
-                <div id="tweetHistory" style="margin-top: 16px;"></div>
+        <div class="section">
+            <h2>📋 Info</h2>
+            <div style="font-size: 13px; line-height: 1.8; color: #cbd5e1;">
+                <p><strong>Version:</strong> V22 - OAuth 2.0 Bearer Token</p>
+                <p><strong>API:</strong> Twitter/X API v2</p>
+                <p><strong>Status:</strong> Testing phase</p>
+                <p style="margin-top: 10px; color: #94a3b8;">
+                    This dashboard connects to the backend service running on Railway.
+                    Make sure the backend is deployed and accessible.
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ CONFIGURATION ============
-        const API_BASE = 'https://crypto-bot-api-production-4a8f.up.railway.app';
-        let currentRegularTweet = null;
-        let currentHistoryTweet = null;
-        let selectedNewsImage = null;
-        let selectedHistoryImage = null;
-        let imageToggle = {
-            regular: true,
-            history: true,
-        };
+        const API_URL = "https://crypto-bot-v20-working-production.up.railway.app";
 
-        // ============ HELPERS ============
-        function showAlert(message, type = 'success') {
-            const alert = document.getElementById('alert');
-            alert.textContent = message;
-            alert.className = `alert show ${type}`;
-            setTimeout(() => alert.classList.remove('show'), 5000);
+        function showMessage(text, type = 'info') {
+            const msgEl = document.getElementById('message');
+            msgEl.className = `message ${type}`;
+            msgEl.textContent = text;
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+        async function checkStatus() {
+            const resultEl = document.getElementById('testResult');
+            resultEl.innerHTML = '<div class="message info">⏳ Checking API...</div>';
 
-            if (tabName === 'prices') fetchPrices();
-            if (tabName === 'auto-post') fetchAutoPostStatus();
-            if (tabName === 'history-view') fetchTweetHistory();
+            try {
+                const response = await fetch(`${API_URL}/api/status`);
+                const data = await response.json();
+
+                let html = '<div class="api-status success">';
+                html += '✅ <strong>API Status:</strong><br>';
+                html += JSON.stringify(data, null, 2);
+                html += '</div>';
+                
+                resultEl.innerHTML = html;
+                updateAPIBadge(true);
+            } catch (error) {
+                let html = '<div class="api-status error">';
+                html += `❌ <strong>Error:</strong> ${error.message}`;
+                html += '</div>';
+                resultEl.innerHTML = html;
+                updateAPIBadge(false);
+            }
         }
 
-        function toggleImage(tab) {
-            imageToggle[tab] = !imageToggle[tab];
-            const toggle = document.getElementById(`imageToggle${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
-            const indicator = document.getElementById(`imageIndicator${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        async function testAPI() {
+            const resultEl = document.getElementById('testResult');
+            resultEl.innerHTML = '<div class="message info">⏳ Testing connection...</div>';
+
+            try {
+                const testTweet = "🧪 Dashboard Test Tweet - V22";
+                const response = await fetch(`${API_URL}/api/post-tweet`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: testTweet })
+                });
+
+                const data = await response.json();
+
+                if (data.status === '✅') {
+                    let html = '<div class="api-status success">';
+                    html += `✅ <strong>Test Successful!</strong><br>`;
+                    html += `Tweet ID: ${data.id}<br>`;
+                    html += `Check @CryptoAdemkris for the test tweet!`;
+                    html += '</div>';
+                    resultEl.innerHTML = html;
+                    updateAPIBadge(true);
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                let html = '<div class="api-status error">';
+                html += `❌ <strong>Test Failed:</strong><br>`;
+                html += `${error.message}`;
+                html += '</div>';
+                resultEl.innerHTML = html;
+                updateAPIBadge(false);
+            }
+        }
+
+        function generateSampleTweet() {
+            const templates = [
+                "🚀 Bitcoin momentum building! #Crypto #Trading",
+                "💎 Ethereum smart contracts revolutionizing Web3 #ETH",
+                "📊 Crypto market update - bullish signals everywhere! 📈 #CryptoNews",
+                "⚡ DeFi ecosystem growing stronger! #Web3 #Finance",
+                "🎯 Trading tip: Always check your strategy! #CryptoTrading"
+            ];
             
-            toggle.classList.toggle('active');
-            indicator.className = `toggle-indicator ${imageToggle[tab] ? 'on' : 'off'}`;
-            indicator.textContent = imageToggle[tab] ? '●' : '●';
+            const tweet = templates[Math.floor(Math.random() * templates.length)];
+            document.getElementById('tweetInput').value = tweet;
+            updatePreview();
+            showMessage('Sample tweet loaded!', 'info');
         }
 
-        // ============ FETCH PRICES ============
-        async function fetchPrices() {
-            try {
-                const res = await fetch(`${API_BASE}/api/prices`);
-                const data = await res.json();
-                
-                const grid = document.getElementById('pricesGrid');
-                grid.innerHTML = '';
-                
-                Object.entries(data.data).forEach(([symbol, info]) => {
-                    const change = parseFloat(info.change);
-                    const color = change >= 0 ? 'var(--success)' : 'var(--danger)';
-                    grid.innerHTML += `
-                        <div class="stat-card">
-                            <div class="stat-value" style="color: ${color}">$${info.price.toFixed(2)}</div>
-                            <div class="stat-label">${symbol}</div>
-                            <div style="color: ${color}; font-size: 11px; margin-top: 4px;">${change > 0 ? '📈' : '📉'} ${change}%</div>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
+        function updatePreview() {
+            const text = document.getElementById('tweetInput').value;
+            const preview = document.getElementById('preview');
+            const previewText = document.getElementById('previewText');
+
+            if (text.trim()) {
+                previewText.textContent = text;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
             }
         }
 
-        // ============ LOAD NEWS ============
-        async function loadCryptoNews() {
-            try {
-                const res = await fetch(`${API_BASE}/api/news`);
-                const data = await res.json();
-                
-                const list = document.getElementById('newsListRegular');
-                list.innerHTML = '';
-                
-                data.data.forEach((news, idx) => {
-                    list.innerHTML += `
-                        <div class="list-item" onclick="selectNews(${idx}, '${news.image}')">
-                            <div class="list-item-title">${news.title}</div>
-                            <span class="list-item-badge">📰</span>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
+        async function postTweet() {
+            const text = document.getElementById('tweetInput').value.trim();
 
-        function selectNews(idx, image) {
-            document.querySelectorAll('#newsListRegular .list-item').forEach((el, i) => {
-                if (i === idx) el.classList.add('selected');
-                else el.classList.remove('selected');
-            });
-            selectedNewsImage = image;
-        }
-
-        // ============ LOAD HISTORY ============
-        async function loadCryptoHistory() {
-            try {
-                const res = await fetch(`${API_BASE}/api/history`);
-                const data = await res.json();
-                
-                const list = document.getElementById('historyListHistory');
-                list.innerHTML = '';
-                
-                data.data.forEach((item, idx) => {
-                    list.innerHTML += `
-                        <div class="list-item" onclick="selectHistory(${idx}, '${item.image}')">
-                            <div class="list-item-title">${item.title}</div>
-                            <span class="list-item-badge">📚</span>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        function selectHistory(idx, image) {
-            document.querySelectorAll('#historyListHistory .list-item').forEach((el, i) => {
-                if (i === idx) el.classList.add('selected');
-                else el.classList.remove('selected');
-            });
-            selectedHistoryImage = image;
-        }
-
-        // ============ GENERATE TWEETS ============
-        async function generateRegularTweet() {
-            try {
-                const crypto = document.getElementById('cryptoSelect').value;
-                const res = await fetch(`${API_BASE}/api/generate-tweet`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cryptoSymbol: crypto, includeImage: imageToggle.regular }),
-                });
-                const data = await res.json();
-                
-                if (data.status !== '✅') throw new Error(data.error);
-                
-                currentRegularTweet = data;
-                document.getElementById('previewRegular').textContent = data.tweet;
-                
-                const img = document.getElementById('previewImageRegular');
-                if (data.image && imageToggle.regular) {
-                    img.src = data.image;
-                    img.style.display = 'block';
-                } else {
-                    img.style.display = 'none';
-                }
-                
-                showAlert('✨ Tweet generated!', 'success');
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        async function generateHistoryTweet() {
-            try {
-                const res = await fetch(`${API_BASE}/api/generate-history-tweet`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ includeImage: imageToggle.history }),
-                });
-                const data = await res.json();
-                
-                if (data.status !== '✅') throw new Error(data.error);
-                
-                currentHistoryTweet = data;
-                document.getElementById('previewHistory').textContent = `📖 ${data.title}\n\n${data.tweet}`;
-                
-                const img = document.getElementById('previewImageHistory');
-                if (data.image && imageToggle.history) {
-                    img.src = data.image;
-                    img.style.display = 'block';
-                } else {
-                    img.style.display = 'none';
-                }
-                
-                showAlert('✨ Tweet generated!', 'success');
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        // ============ POST TWEETS ============
-        async function postRegularTweet() {
-            if (!currentRegularTweet) {
-                showAlert('Please generate a tweet first!', 'error');
+            if (!text) {
+                showMessage('⚠️ Please enter a tweet', 'error');
                 return;
             }
 
-            try {
-                const payload = {
-                    text: currentRegularTweet.tweet,
-                    image: (imageToggle.regular && currentRegularTweet.image) ? currentRegularTweet.image : null,
-                };
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '🚀 Posting' + '<span class="loading"></span>';
 
-                const res = await fetch(`${API_BASE}/api/post-tweet`, {
+            try {
+                const response = await fetch(`${API_URL}/api/post-tweet`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
                 });
-                const data = await res.json();
-                
-                if (data.status !== '✅') throw new Error(data.error);
-                
-                showAlert(`🐦 Tweet posted! ID: ${data.tweetId}`, 'success');
-                fetchTweetHistory();
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
 
-        async function postHistoryTweet() {
-            if (!currentHistoryTweet) {
-                showAlert('Please generate a tweet first!', 'error');
-                return;
-            }
+                const data = await response.json();
 
-            try {
-                const payload = {
-                    text: currentHistoryTweet.tweet,
-                    image: (imageToggle.history && currentHistoryTweet.image) ? currentHistoryTweet.image : null,
-                };
-
-                const res = await fetch(`${API_BASE}/api/post-history-tweet`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                const data = await res.json();
-                
-                if (data.status !== '✅') throw new Error(data.error);
-                
-                showAlert(`🐦 Tweet posted! ID: ${data.tweetId}`, 'success');
-                fetchTweetHistory();
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        // ============ AUTO-POST ============
-        async function updateAutoPostConfig() {
-            try {
-                const intervalHours = parseFloat(document.getElementById('intervalHours').value);
-                const enabled = document.getElementById('autoPostToggle').classList.contains('active');
-
-                const res = await fetch(`${API_BASE}/api/auto-post/config`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ enabled, intervalHours }),
-                });
-                const data = await res.json();
-                
-                if (data.status !== '✅') throw new Error(data.error);
-                
-                showAlert(data.message, 'success');
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        async function toggleAutoPost() {
-            const toggle = document.getElementById('autoPostToggle');
-            const indicator = document.getElementById('autoPostIndicator');
-            toggle.classList.toggle('active');
-            indicator.className = `toggle-indicator ${toggle.classList.contains('active') ? 'on' : 'off'}`;
-        }
-
-        async function triggerAutoPost() {
-            try {
-                const res = await fetch(`${API_BASE}/api/auto-post/trigger`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({}),
-                });
-                const data = await res.json();
-                
-                if (data.status !== '✅' && data.status !== '⚠️') throw new Error(data.error);
-                
-                showAlert(data.message || data.error, data.status === '✅' ? 'success' : 'error');
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        async function fetchAutoPostStatus() {
-            try {
-                const res = await fetch(`${API_BASE}/api/status`);
-                const data = await res.json();
-                
-                document.getElementById('autoPostStatus').innerHTML = `
-                    <strong>Status:</strong> ${data.status}<br>
-                    <strong>Auto-Post:</strong> ${data.autoPost.enabled ? '🟢 Enabled' : '🔴 Disabled'}<br>
-                    <strong>Interval:</strong> Every ${data.autoPost.intervalHours} hours<br>
-                    <strong>Features:</strong> ${data.features.join(', ')}
-                `;
-            } catch (error) {
-                document.getElementById('autoPostStatus').textContent = `Error fetching status: ${error.message}`;
-            }
-        }
-
-        // ============ TWEET HISTORY ============
-        async function fetchTweetHistory() {
-            try {
-                const res = await fetch(`${API_BASE}/api/tweet-history`);
-                const data = await res.json();
-                
-                const container = document.getElementById('tweetHistory');
-                if (data.tweets.length === 0) {
-                    container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No tweets posted yet</p>';
-                    return;
+                if (data.status === '✅') {
+                    showMessage(`✅ Tweet posted successfully! ID: ${data.id}`, 'success');
+                    document.getElementById('tweetInput').value = '';
+                    document.getElementById('preview').style.display = 'none';
+                    updateAPIBadge(true);
+                } else {
+                    throw new Error(data.error || 'Unknown error');
                 }
-                
-                container.innerHTML = data.tweets.map(tweet => `
-                    <div class="tweet-item">
-                        <div class="tweet-meta">
-                            <span class="tweet-type">${tweet.type.toUpperCase()}</span>
-                            <span>${new Date(tweet.timestamp).toLocaleString()}</span>
-                        </div>
-                        <div>${tweet.text}</div>
-                        ${tweet.image ? `<div style="margin-top: 8px; font-size: 11px; color: var(--success);">🖼️ Image: ${tweet.image}</div>` : ''}
-                    </div>
-                `).join('');
             } catch (error) {
-                document.getElementById('tweetHistory').innerHTML = `<p style="color: var(--danger);">Error: ${error.message}</p>`;
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                updateAPIBadge(false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         }
 
-        // ============ INIT ============
-        window.addEventListener('load', () => {
-            fetchPrices();
-            loadCryptoNews();
-            loadCryptoHistory();
-        });
+        function updateAPIBadge(isOk) {
+            const badge = document.getElementById('api-status');
+            if (isOk) {
+                badge.className = 'status-badge status-ok';
+                badge.textContent = '✅ Connected';
+            } else {
+                badge.className = 'status-badge status-error';
+                badge.textContent = '❌ Disconnected';
+            }
+        }
+
+        // Auto-update preview as user types
+        document.getElementById('tweetInput').addEventListener('input', updatePreview);
+
+        // Check API status on load
+        window.addEventListener('load', checkStatus);
     </script>
 </body>
 </html>
