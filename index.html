@@ -126,6 +126,10 @@
     box-shadow:inset 0 3px 0 0 var(--accent);
   }
   .tab.active .tab-sub{color:var(--accent);}
+  @media (max-width:560px){
+    .tab{padding:10px 4px;font-size:12.5px;}
+    .tab .tab-sub{display:none;}
+  }
 
   /* ---------- Panel ---------- */
   .panel{
@@ -335,6 +339,10 @@
       <span class="tab-name">Study</span>
       <span class="tab-sub">One concept</span>
     </button>
+    <button class="tab" data-cat="meme">
+      <span class="tab-name">Memes</span>
+      <span class="tab-sub">Clean humor</span>
+    </button>
   </nav>
 
   <section class="panel">
@@ -370,6 +378,10 @@
         <input type="text" id="studyTopic" placeholder="e.g. what is slippage">
       </div>
       <button class="generate-btn" id="btnStudy">Generate post</button>
+    </div>
+
+    <div class="controls" id="controlsMeme" style="display:none;">
+      <button class="generate-btn" id="btnMeme">Generate meme</button>
     </div>
 
     <div class="status-line" id="statusLine"></div>
@@ -414,12 +426,13 @@ const COINS = [
   ["chainlink","Chainlink (LINK)"],["avalanche-2","Avalanche (AVAX)"]
 ];
 
-const ACCENTS = { history:"#d9a441", price:"#4fd1a5", news:"#e0684a", study:"#a191f2" };
+const ACCENTS = { history:"#d9a441", price:"#4fd1a5", news:"#e0684a", study:"#a191f2", meme:"#ea5fa3" };
 const INTROS = {
   history:"A notable event from crypto's past — a hack, a halving, a milestone. Add today's price if it's relevant.",
   price:"A clean, current price reading for one coin, pulled straight from the market.",
   news:"A real headline from the crypto and financial wire, turned into a post.",
-  study:"One trading or blockchain concept, explained simply enough to teach."
+  study:"One trading or blockchain concept, explained simply enough to teach.",
+  meme:"A clean, funny caption about crypto trading life, paired with a cartoon illustration — no profanity, no mocking real people."
 };
 
 let activeCat = "history";
@@ -448,7 +461,7 @@ document.querySelectorAll(".tab").forEach(tab => {
     activeCat = tab.dataset.cat;
     document.documentElement.style.setProperty("--accent", ACCENTS[activeCat]);
     document.getElementById("panelIntro").textContent = INTROS[activeCat];
-    ["History","Price","News","Study"].forEach(c => {
+    ["History","Price","News","Study","Meme"].forEach(c => {
       document.getElementById("controls"+c).style.display = (c.toLowerCase() === activeCat) ? "flex" : "none";
     });
     resetOutput();
@@ -511,8 +524,9 @@ async function generate(category, endpoint, body, btn){
     const data = await callApi(endpoint, body);
     lastText = data.text;
     document.getElementById("postText").textContent = data.text;
-    document.getElementById("charCount").textContent = data.text.length + " / 260";
-    document.getElementById("charCount").className = "char-count" + (data.text.length > 260 ? " over" : "");
+    const maxChars = category === "meme" ? 200 : 260;
+    document.getElementById("charCount").textContent = data.text.length + " / " + maxChars;
+    document.getElementById("charCount").className = "char-count" + (data.text.length > maxChars ? " over" : "");
     document.getElementById("sourceNote").textContent = data.sourceHeadline ? ("Source headline: " + data.sourceHeadline) : "";
     document.getElementById("btnCopy").disabled = false;
     setStatus("Post ready. Generating a matching image…", false);
@@ -526,16 +540,21 @@ async function generate(category, endpoint, body, btn){
 
 async function generateImage(text, category){
   const frame = document.getElementById("imageFrame");
-  frame.innerHTML = '<span class="spinner"></span>';
+  frame.innerHTML = '<span class="spinner"></span> <span class="image-empty" style="margin-left:8px;">Drawing the image, this can take up to a minute…</span>';
   try{
     const data = await callApi("/api/generate/image", { text, category });
+    // data.imageUrl is a data: URI (image bytes embedded) — always renders, no hotlink/CORS issues.
     frame.innerHTML = "";
     const img = document.createElement("img");
-    img.src = data.imageUrl;
     img.alt = "Generated illustration for this post";
+    img.onerror = () => {
+      frame.innerHTML = '<span class="image-empty">Image didn\u2019t render \u2014 try \u201cNew image\u201d.</span>';
+    };
+    img.src = data.imageUrl;
     frame.appendChild(img);
     const dl = document.getElementById("btnDownload");
-    dl.href = BACKEND + "/api/download-image?url=" + encodeURIComponent(data.imageUrl);
+    dl.href = data.imageUrl;
+    dl.setAttribute("download", "x-post-image.jpg");
     dl.style.pointerEvents = "auto"; dl.style.opacity = "1";
     document.getElementById("btnNewImage").disabled = false;
     setStatus("Post and image ready.", false);
@@ -561,24 +580,5 @@ document.getElementById("btnStudy").addEventListener("click", () => {
   const topic = document.getElementById("studyTopic").value.trim();
   generate("study", "/api/generate/study", topic ? { topic } : {}, document.getElementById("btnStudy"));
 });
-
-document.getElementById("btnCopy").addEventListener("click", async () => {
-  const btn = document.getElementById("btnCopy");
-  try{
-    await navigator.clipboard.writeText(lastText);
-  }catch(e){
-    const ta = document.createElement("textarea");
-    ta.value = lastText; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); document.body.removeChild(ta);
-  }
-  const original = btn.textContent;
-  btn.textContent = "Copied";
-  setTimeout(() => { btn.textContent = original; }, 1500);
-});
-
-document.getElementById("btnNewImage").addEventListener("click", () => {
-  if(lastText) generateImage(lastText, activeCat);
-});
-</script>
-</body>
-</html>
+document.getElementById("btnMeme").addEventListener("click", () => {
+  generate
