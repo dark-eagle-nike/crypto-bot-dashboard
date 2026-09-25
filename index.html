@@ -540,7 +540,7 @@ async function generate(category, endpoint, body, btn){
 
 async function generateImage(text, category){
   const frame = document.getElementById("imageFrame");
-  frame.innerHTML = '<span class="spinner"></span> <span class="image-empty" style="margin-left:8px;">Drawing the image, this can take up to a minute…</span>';
+  frame.innerHTML = '<span class="spinner"></span> <span class="image-empty" style="margin-left:8px;">Drawing the image \u2014 this is a free shared queue, so it can take up to ~90 seconds…</span>';
   try{
     const data = await callApi("/api/generate/image", { text, category });
     // data.imageUrl is a data: URI (image bytes embedded) — always renders, no hotlink/CORS issues.
@@ -580,27 +580,4 @@ document.getElementById("btnStudy").addEventListener("click", () => {
   const topic = document.getElementById("studyTopic").value.trim();
   generate("study", "/api/generate/study", topic ? { topic } : {}, document.getElementById("btnStudy"));
 });
-document.getElementById("btnMeme").addEventListener("click", () => {
-  generate("meme", "/api/generate/meme", {}, document.getElementById("btnMeme"));
-});
-
-document.getElementById("btnCopy").addEventListener("click", async () => {
-  const btn = document.getElementById("btnCopy");
-  try{
-    await navigator.clipboard.writeText(lastText);
-  }catch(e){
-    const ta = document.createElement("textarea");
-    ta.value = lastText; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); document.body.removeChild(ta);
-  }
-  const original = btn.textContent;
-  btn.textContent = "Copied";
-  setTimeout(() => { btn.textContent = original; }, 1500);
-});
-
-document.getElementById("btnNewImage").addEventListener("click", () => {
-  if(lastText) generateImage(lastText, activeCat);
-});
-</script>
-</body>
-</html>
+document.getElementById("btnMeme").addEv
